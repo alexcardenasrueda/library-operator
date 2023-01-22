@@ -16,7 +16,7 @@ public class ApiError { private HttpStatus status;
     @JsonIgnore
     private String debugMessage;
     @JsonIgnore
-    private List<com.unir.librarybrowser.exception.ApiSubError> subErrors;
+    private List<com.unir.libraryoperator.exception.ApiSubError> subErrors;
 
     private ApiError() {
         timestamp = LocalDateTime.now();
