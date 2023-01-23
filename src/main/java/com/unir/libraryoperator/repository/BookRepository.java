@@ -20,13 +20,4 @@ public interface BookRepository extends CrudRepository<BookEntity, Long> {
      */
     BookEntity save(BookDto request);
 
-    /**
-     * @param entity
-     * @param <S>
-     * @return
-     */
-    @Override
-    default <S extends BookEntity> S save(S entity) {
-        return null;
-    }
 }
