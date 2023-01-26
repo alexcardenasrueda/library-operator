@@ -1,9 +1,13 @@
 package com.unir.libraryoperator.service.implementation;
 
+import com.google.common.base.Function;
+import com.unir.libraryoperator.domain.dto.BookDto;
 import com.unir.libraryoperator.domain.dto.LendDto;
+import com.unir.libraryoperator.domain.dto.PersonDto;
 import com.unir.libraryoperator.domain.entity.LendEntity;
 import com.unir.libraryoperator.exception.GenericException;
 import com.unir.libraryoperator.exception.NotFoundException;
+import com.unir.libraryoperator.facade.BookFacade;
 import com.unir.libraryoperator.repository.LendRepository;
 import com.unir.libraryoperator.service.Lend;
 import org.modelmapper.ModelMapper;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,9 +27,20 @@ public class LendService implements Lend {
     @Autowired
     LendRepository lendRepository;
 
+    @Autowired
+    private BookFacade personFacade;
+
+
+
     @Override
     public LendDto create(LendDto lendDto) throws GenericException, NotFoundException {
         LendEntity lend;
+
+
+        BookDto book = personFacade.getBook(lendDto.getPersonId());
+        if (book == null){
+
+        }
         try{
             lend = modelMapper.map(lendDto, LendEntity.class);
             lendRepository.saveAndFlush(lend);
