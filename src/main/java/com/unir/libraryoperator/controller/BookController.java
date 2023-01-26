@@ -6,10 +6,12 @@ import com.unir.libraryoperator.exception.NotFoundException;
 import com.unir.libraryoperator.service.Book;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +27,19 @@ public class BookController {
   @Autowired
   private Book service;
 
+  @GetMapping
+  ResponseEntity<List<BookDto>> getAll() throws GenericException, NotFoundException {
+    return ResponseEntity.ok(service.getAll());
+  }
+
+  @GetMapping(value = "/get-by-id")
+  ResponseEntity<BookDto> getById(@RequestParam(required = true, value = "id") long id)
+      throws GenericException, NotFoundException {
+    return ResponseEntity.ok(service.getById(id));
+  }
+
   @PostMapping
-  ResponseEntity<Object> createBook(@Valid @RequestBody(required = true) BookDto request)
+  ResponseEntity<String> createBook(@Valid @RequestBody(required = true) BookDto request)
       throws GenericException {
     return ResponseEntity.created(
             URI.create(String.format("/books/%s", service.createBook(request))))
@@ -41,7 +54,7 @@ public class BookController {
   }
 
   @DeleteMapping
-   ResponseEntity<Object> deleteBook(@RequestParam(required = true, value = "id") long id)
+  ResponseEntity<Object> deleteBook(@RequestParam(required = true, value = "id") long id)
       throws GenericException {
     return ResponseEntity.ok(service.deleteBook(id));
   }

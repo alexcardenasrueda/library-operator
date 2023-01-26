@@ -7,9 +7,15 @@ import java.util.List;
 
 public interface Book {
 
-    Long createBook(BookDto request) throws GenericException;
+  List<BookDto> getAll();
 
-    BookDto updateBook(long id, BookDto request) throws NotFoundException, GenericException;
+  BookDto getById(long id);
 
-    Object deleteBook(long id) throws GenericException;
+  Long createBook(BookDto request) throws GenericException;
+
+  BookDto updateBook(long id, BookDto request) throws NotFoundException, GenericException;
+
+  Object deleteBook(long id) throws GenericException;
+
+
 }

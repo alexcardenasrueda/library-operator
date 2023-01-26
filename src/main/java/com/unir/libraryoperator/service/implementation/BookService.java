@@ -5,8 +5,10 @@ import com.unir.libraryoperator.domain.dto.BookDto;
 import com.unir.libraryoperator.domain.entity.BookEntity;
 import com.unir.libraryoperator.exception.GenericException;
 import com.unir.libraryoperator.exception.NotFoundException;
+import com.unir.libraryoperator.facade.BookFacade;
 import com.unir.libraryoperator.repository.BookRepository;
 import com.unir.libraryoperator.service.Book;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
@@ -28,10 +30,30 @@ public class BookService implements Book {
   @Autowired
   ModelMapper modelMapper;
 
+  @Autowired
+  BookFacade facade;
+
   @Value("${exception.book.create_failed}")
   private String errorCreation;
   @Value("${exception.book.not_found}")
   private String bookNotFound;
+
+  /**
+   * @return
+   */
+  @Override
+  public List<BookDto> getAll() {
+    return null;
+  }
+
+  /**
+   * @param id
+   * @return
+   */
+  @Override
+  public BookDto getById(long id) {
+    return null;
+  }
 
   /**
    * @param request
@@ -62,12 +84,17 @@ public class BookService implements Book {
   public BookDto updateBook(long id, BookDto request) throws NotFoundException, GenericException {
     BookDto book;
     try {
+      List<BookDto> books = facade.getBooks();
+      books.forEach(System.out::println);
+
       Optional<BookEntity> entityBook = repository.findById(id);
       if (entityBook.isEmpty()) {
         throw new NotFoundException(MessageFormat.format(bookNotFound, id));
       }
+      BookEntity map = modelMapper.map(request, BookEntity.class);
       request.setBookId(entityBook.get().getBookId());
-      BookEntity savedBook = repository.save(request);
+      BookEntity savedBook = repository.save(map);
+
       if (savedBook == null) {
         throw new GenericException(errorCreation);
       }
