@@ -25,9 +25,10 @@ public class BookFacade {
 
   private final RestTemplate restTemplate;
 
-  public List<BookDto> getBooks(){
+  public List<BookDto> getBooks() {
     try {
-      ResponseEntity<BookDto[]> response = restTemplate.getForEntity(getProductUrl, BookDto[].class);
+      ResponseEntity<BookDto[]> response = restTemplate.getForEntity(getProductUrl,
+          BookDto[].class);
       BookDto[] booksResponse = response.getBody();
       assert booksResponse != null;
       return Arrays.asList(booksResponse);

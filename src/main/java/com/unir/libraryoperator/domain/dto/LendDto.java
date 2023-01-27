@@ -1,6 +1,5 @@
 package com.unir.libraryoperator.domain.dto;
 
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 
