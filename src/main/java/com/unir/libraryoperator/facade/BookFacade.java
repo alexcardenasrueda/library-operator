@@ -20,22 +20,20 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:constants.properties")
 public class BookFacade {
 
-  @Value("${getBooks.url}")
-  private String getProductUrl;
+  @Value("${getBookById.url}")
+  private String getBookByIdUrl;
 
   private final RestTemplate restTemplate;
 
-  public List<BookDto> getBooks() {
+  public BookDto getById(long id) {
     try {
-      ResponseEntity<BookDto[]> response = restTemplate.getForEntity(getProductUrl,
-          BookDto[].class);
-      BookDto[] booksResponse = response.getBody();
-      assert booksResponse != null;
-      return Arrays.asList(booksResponse);
+      System.out.println(String.format(getBookByIdUrl, id));
+      ResponseEntity<BookDto> response = restTemplate.getForEntity(String.format(getBookByIdUrl, id),
+          BookDto.class);
+      return response.getBody();
     } catch (HttpClientErrorException e) {
       log.error("Client Error: {}}", e.getStatusCode());
       return null;
     }
   }
-
 }

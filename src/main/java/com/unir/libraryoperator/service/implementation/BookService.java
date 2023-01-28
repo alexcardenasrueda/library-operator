@@ -8,9 +8,6 @@ import com.unir.libraryoperator.exception.NotFoundException;
 import com.unir.libraryoperator.facade.BookFacade;
 import com.unir.libraryoperator.repository.BookRepository;
 import com.unir.libraryoperator.service.Book;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 
 @Service
 @PropertySource("classpath:constants.properties")
@@ -37,14 +33,6 @@ public class BookService implements Book {
   private String errorCreation;
   @Value("${exception.book.not_found}")
   private String bookNotFound;
-
-  /**
-   * @return
-   */
-  @Override
-  public List<BookDto> getAll() {
-    return null;
-  }
 
   /**
    * @param id
@@ -81,28 +69,24 @@ public class BookService implements Book {
    * @return
    */
   @Override
-  public BookDto updateBook(long id, BookDto request) throws NotFoundException, GenericException {
-    BookDto book;
+  public Long updateBook(long id, BookDto request) throws NotFoundException, GenericException {
+    BookEntity save;
     try {
-      List<BookDto> books = facade.getBooks();
-      books.forEach(System.out::println);
+      BookDto bookFacade = facade.getById(id);
+      System.out.println(bookFacade);
 
-      Optional<BookEntity> entityBook = repository.findById(id);
-      if (entityBook.isEmpty()) {
+      if (bookFacade == null) {
         throw new NotFoundException(MessageFormat.format(bookNotFound, id));
       }
-      BookEntity map = modelMapper.map(request, BookEntity.class);
-      request.setBookId(entityBook.get().getBookId());
-      BookEntity savedBook = repository.save(map);
+      BookEntity entityBook = modelMapper.map(request, BookEntity.class);
+      entityBook.setBookId(id);
 
-      if (savedBook == null) {
-        throw new GenericException(errorCreation);
-      }
-      book = modelMapper.map(entityBook.get(), BookDto.class);
+      save = repository.save(entityBook);
+
     } catch (RuntimeException e) {
       throw new GenericException(e.getMessage());
     }
-    return book;
+    return save.getBookId();
   }
 
   /**
