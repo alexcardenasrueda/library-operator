@@ -1,53 +1,39 @@
 package com.unir.libraryoperator.facade;
 
 import com.unir.libraryoperator.domain.dto.BookDto;
-import com.unir.libraryoperator.domain.dto.LendDto;
-import com.unir.libraryoperator.domain.dto.PersonDto;
-import com.unir.libraryoperator.domain.entity.LendEntity;
+import com.unir.libraryoperator.domain.entity.BookEntity;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Component
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
+@PropertySource("classpath:constants.properties")
 public class BookFacade {
 
-    @Value("${getBook.url}")
-    private String getBookUrl;
+  @Value("${getBookById.url}")
+  private String getBookByIdUrl;
 
-    @Value("${getBooks.url}")
-    private String getBooksUrl;
+  private final RestTemplate restTemplate;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    public BookDto getBook(long id){
-        restTemplate.getMessageConverters();
-        try{
-            //String url= String.format(getBookUrl, id);
-            BookDto result = restTemplate.getForObject(getBooksUrl, BookDto.class);
-            return result;
-        }catch (Exception e){
-            log.error("Client error: {}, Person with ID {}", e.getMessage(), id);
-            e.printStackTrace();
-            return null;
-        }
+  public BookDto getById(long id) {
+    try {
+      System.out.println(String.format(getBookByIdUrl, id));
+      ResponseEntity<BookDto> response = restTemplate.getForEntity(String.format(getBookByIdUrl, id),
+          BookDto.class);
+      return response.getBody();
+    } catch (HttpClientErrorException e) {
+      log.error("Client Error: {}}", e.getStatusCode());
+      return null;
     }
-
-    public List<BookDto> getBooks(){
-        try{
-            String url= String.format(getBooksUrl);
-            return (List<BookDto>) restTemplate.getForObject(String.format(getBooksUrl), BookDto.class);
-        }catch (HttpClientErrorException e){
-            log.error("Client error: {}, Person with ID {}", e.getStatusCode());
-            return null;
-        }
-    }
+  }
 }
