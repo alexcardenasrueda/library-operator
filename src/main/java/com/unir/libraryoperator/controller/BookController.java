@@ -9,6 +9,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,20 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BookController {
 
+
   @Autowired
   private Book service;
 
-  @GetMapping(value = "/get_by_id/{id}")
-  ResponseEntity<BookDto> getById(@PathVariable(required = true) long id)
-      throws GenericException, NotFoundException {
-    return ResponseEntity.ok(service.getById(id));
-  }
-
   @PostMapping
-  ResponseEntity<URI> createBook(@Valid @PathVariable(required = true) BookDto request)
+  ResponseEntity<URI> createBook(@Valid @RequestBody(required = true) BookDto request)
       throws GenericException {
     return ResponseEntity.created(
-            URI.create(String.format("library-operator/books/get_by_id/%s", service.createBook(request))))
+            URI.create(String.format("library-browser/books/get_by_id/%s", service.createBook(request))))
         .build();
   }
 
@@ -45,7 +41,9 @@ public class BookController {
   ResponseEntity<URI> updateBook(@PathVariable long id,
       @Valid @RequestBody(required = true) BookDto request)
       throws GenericException, NotFoundException {
-    return ResponseEntity.ok(URI.create(String.format("library-operator/books/get_by_id/%s", service.updateBook(id, request))));
+    return ResponseEntity.created(
+                    URI.create(String.format("library-browser/books/get_by_id/%s", service.updateBook(id,request))))
+            .build();
   }
 
   @DeleteMapping(value = "/{id}")

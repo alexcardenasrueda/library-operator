@@ -2,6 +2,7 @@ package com.unir.libraryoperator.service.implementation;
 
 
 import com.unir.libraryoperator.domain.dto.BookDto;
+import com.unir.libraryoperator.domain.dto.LendDto;
 import com.unir.libraryoperator.domain.entity.BookEntity;
 import com.unir.libraryoperator.exception.GenericException;
 import com.unir.libraryoperator.exception.NotFoundException;
@@ -34,14 +35,6 @@ public class BookService implements Book {
   @Value("${exception.book.not_found}")
   private String bookNotFound;
 
-  /**
-   * @param id
-   * @return
-   */
-  @Override
-  public BookDto getById(long id) {
-    return null;
-  }
 
   /**
    * @param request
@@ -95,10 +88,14 @@ public class BookService implements Book {
    */
   @Override
   public Object deleteBook(long id) throws GenericException {
-    try {
+    try{
+      BookDto book = facade.getById(id);
+      if (book == null) {
+        throw new NotFoundException(MessageFormat.format(bookNotFound, id));
+      }
       repository.deleteById(id);
-    } catch (RuntimeException ex) {
-      throw new GenericException(ex.getMessage());
+    }catch (RuntimeException | NotFoundException e){
+      throw new GenericException(e.getMessage());
     }
     return null;
   }

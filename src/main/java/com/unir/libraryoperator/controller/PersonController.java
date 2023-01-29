@@ -1,17 +1,19 @@
 package com.unir.libraryoperator.controller;
 
 
+import com.unir.libraryoperator.domain.dto.BookDto;
 import com.unir.libraryoperator.domain.dto.PersonDto;
 import com.unir.libraryoperator.exception.GenericException;
+import com.unir.libraryoperator.exception.NotFoundException;
+import com.unir.libraryoperator.service.Book;
 import com.unir.libraryoperator.service.Person;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -20,15 +22,28 @@ import java.util.List;
 public class PersonController {
 
     @Autowired
-    private Person service;
+    private Person personService;
 
-    @GetMapping
-    ResponseEntity<List<PersonDto>> getAll() throws GenericException {
-        return ResponseEntity.ok(service.getAll());
+    @PostMapping
+    ResponseEntity<URI> createPerson(@Valid @RequestBody(required = true) PersonDto personDto)
+            throws GenericException {
+        return ResponseEntity.created(
+                        URI.create(String.format("library-browser/people/get_by_id/%s", personService.createPerson(personDto))))
+                .build();
     }
 
-    @GetMapping(value ="/getById")
-    ResponseEntity<PersonDto> getById(@RequestParam(required = true, name = "id") long id ) throws GenericException {
-        return ResponseEntity.ok(service.getById(id));
+    @PutMapping(value = "/{id}")
+    ResponseEntity<URI> updatePerson(@PathVariable long id,
+                                   @Valid @RequestBody(required = true) PersonDto personDto)
+            throws GenericException, NotFoundException {
+        return ResponseEntity.created(
+                        URI.create(String.format("library-browser/people/get_by_id/%s", personService.updatePerson(id,personDto))))
+                .build();    }
+
+    @DeleteMapping(value = "/{id}")
+    ResponseEntity<Object> deletePerson(@PathVariable long id)
+            throws GenericException {
+        personService.deletePerson(id);
+        return ResponseEntity.noContent().build();
     }
 }
