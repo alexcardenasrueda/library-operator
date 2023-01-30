@@ -6,8 +6,6 @@ import com.unir.libraryoperator.exception.NotFoundException;
 
 public interface Book {
 
-  BookDto getById(long id);
-
   Long createBook(BookDto request) throws GenericException;
 
   Long updateBook(long id, BookDto request) throws NotFoundException, GenericException;
