@@ -2,7 +2,7 @@ package com.unir.libraryoperator.service.implementation;
 
 
 import com.unir.libraryoperator.domain.dto.BookDto;
-import com.unir.libraryoperator.domain.dto.LendDto;
+import com.unir.libraryoperator.domain.dto.ElasticBookDto;
 import com.unir.libraryoperator.domain.entity.BookEntity;
 import com.unir.libraryoperator.exception.GenericException;
 import com.unir.libraryoperator.exception.NotFoundException;
@@ -49,11 +49,21 @@ public class BookService implements Book {
       if (savedBook == null) {
         throw new GenericException(errorCreation);
       }
+      //Integration with browser-elasticsearch
+      facade.create(this.translatorRqCreateElasticSearch(request, savedBook.getBookId()));
+
       idBook = savedBook.getBookId();
     } catch (RuntimeException e) {
       throw new GenericException(e.getMessage());
     }
     return idBook;
+  }
+
+  private ElasticBookDto translatorRqCreateElasticSearch(BookDto request, long bookId) {
+    ElasticBookDto requestTranslated = ElasticBookDto.builder().build();
+    requestTranslated = modelMapper.map(request, ElasticBookDto.class);
+    requestTranslated.setId(bookId);
+    return requestTranslated;
   }
 
   /**
