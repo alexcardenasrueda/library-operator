@@ -86,6 +86,9 @@ public class BookService implements Book {
 
       save = repository.save(entityBook);
 
+      //Integration with browser-elasticsearch
+      facade.create(this.translatorRqCreateElasticSearch(request, save.getBookId()));
+
     } catch (RuntimeException e) {
       throw new GenericException(e.getMessage());
     }
@@ -94,19 +97,19 @@ public class BookService implements Book {
 
   /**
    * @param id
-   * @return
    */
   @Override
-  public Object deleteBook(long id) throws GenericException {
+  public void deleteBook(long id) throws GenericException {
     try{
       BookDto book = facade.getById(id);
       if (book == null) {
         throw new NotFoundException(MessageFormat.format(bookNotFound, id));
       }
+      //Integration with browser-elasticsearch
+      facade.delete(id);
       repository.deleteById(id);
     }catch (RuntimeException | NotFoundException e){
       throw new GenericException(e.getMessage());
     }
-    return null;
   }
 }

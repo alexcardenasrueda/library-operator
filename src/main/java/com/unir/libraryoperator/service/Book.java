@@ -10,7 +10,7 @@ public interface Book {
 
   Long updateBook(long id, BookDto request) throws NotFoundException, GenericException;
 
-  Object deleteBook(long id) throws GenericException;
+  void deleteBook(long id) throws GenericException;
 
 
 }
