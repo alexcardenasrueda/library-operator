@@ -2,6 +2,8 @@ package com.unir.libraryoperator.service.implementation;
 
 
 import com.unir.libraryoperator.domain.dto.BookDto;
+import com.unir.libraryoperator.domain.dto.ElasticBookDto;
+import com.unir.libraryoperator.domain.dto.ElasticPersonDto;
 import com.unir.libraryoperator.domain.dto.PersonDto;
 import com.unir.libraryoperator.domain.entity.PersonEntity;
 import com.unir.libraryoperator.exception.GenericException;
@@ -39,16 +41,25 @@ public class PersonService implements Person {
     public Long createPerson(PersonDto personDto) throws GenericException {
         long idPerson;
         try {
-            PersonEntity prsonEntity = modelMapper.map(personDto, PersonEntity.class);
-            PersonEntity savedPerson = personRepository.save(prsonEntity);
+            PersonEntity personEntity = modelMapper.map(personDto, PersonEntity.class);
+            PersonEntity savedPerson = personRepository.save(personEntity);
             if (savedPerson == null) {
                 throw new GenericException(errorCreationPerson);
             }
+            //Integration with browser-elasticsearch
+            personFacade.create(this.translatorRqCreateElasticSearch(personDto, savedPerson.getPersonId()));
             idPerson = savedPerson.getPersonId();
         } catch (RuntimeException e) {
             throw new GenericException(e.getMessage());
         }
         return idPerson;
+    }
+
+    private ElasticPersonDto translatorRqCreateElasticSearch(PersonDto request, long bookId) {
+        ElasticPersonDto requestTranslated = ElasticPersonDto.builder().build();
+        requestTranslated = modelMapper.map(request, ElasticPersonDto.class);
+        requestTranslated.setId(bookId);
+        return requestTranslated;
     }
 
     @Override
