@@ -1,11 +1,9 @@
 package com.unir.libraryoperator.controller;
 
 
-import com.unir.libraryoperator.domain.dto.BookDto;
 import com.unir.libraryoperator.domain.dto.PersonDto;
 import com.unir.libraryoperator.exception.GenericException;
 import com.unir.libraryoperator.exception.NotFoundException;
-import com.unir.libraryoperator.service.Book;
 import com.unir.libraryoperator.service.Person;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
